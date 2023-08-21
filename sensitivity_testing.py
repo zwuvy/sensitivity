@@ -10,16 +10,15 @@ import win32gui
 import time
 import pyperclip
 import openpyxl 
+import win32com.client
 
 NUM_TESTS = 1000
 TEST_INTERVAL = 0.25
 POWER_LEVEL_LIST = [-90, -100, -105, -110, -111, -112, -113, -114, -115, -116, -117, -118, -119, -120]
 
 #invisible characters in these strings
-generator_window = "noVNC - Work - Microsoft​ Edge"  
+generator_window = "New tab - Work - Microsoft​ Edge"  
 vscode_window = "sensitivity_testing.py - Visual Studio Code"
-
-
 
 def init_test_type():
     test_type = input("Enter '1' if this is a simple sensitivity test, '2' if it is a baud rate shift test, and '3' if it is a frequency shift test\n")
@@ -140,10 +139,12 @@ def rate_conversion(shift, step, rate):
     return rate_list, rounded_list
 
 def switch_window(window_title):
-    time.sleep(1)
-    hwnd = win32gui.FindWindow(None, window_title)
+    time.sleep(0.5)
+    shell = win32com.client.Dispatch("WScript.Shell")
+    shell.SendKeys('%')
+    hwnd = win32gui.FindWindow("Chrome_WidgetWin_1", window_title)
     win32gui.SetForegroundWindow(hwnd)
-    time.sleep(1)
+    time.sleep(0.5)
 
 def go_home():
     time.sleep(1)
@@ -221,6 +222,8 @@ def main():
 
     if test_type == 1:
         init_sensitivity_workbook(frequency, rate)
+        switch_window(vscode_window)
+
         switch_window(generator_window)
         switch_window(vscode_window)
         set_symbol_rate(rate)
